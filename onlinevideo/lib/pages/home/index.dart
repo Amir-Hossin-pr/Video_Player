@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:onlinevideo/pages/widgets/button.dart';
@@ -19,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   //? Controllers
   final _url = TextEditingController();
   late VideoPlayerController _videController;
-  late ChewieController _chewieController;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   //? Variables
@@ -88,15 +86,13 @@ class _HomePageState extends State<HomePage> {
         downloading = true;
         setState(() {});
 
-        // final tempDir = await getTemporaryDirectory();
-        // final file = await File('${tempDir.path}/temp.mp4').create();
+        final tempDir = await getTemporaryDirectory();
+        final file = await File('${tempDir.path}/temp.mp4').create();
 
-        // final dio = Dio();
-        // await dio.download(_url.text, file.path);
+        final dio = Dio();
+        await dio.download(_url.text, file.path);
 
-        _videController = VideoPlayerController.networkUrl(
-          Uri.parse(_url.text),
-        );
+        _videController = VideoPlayerController.file(file);
 
         await _videController.initialize();
         _videController.addListener(_checkVideo);
