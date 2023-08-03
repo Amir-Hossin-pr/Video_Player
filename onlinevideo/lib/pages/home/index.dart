@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:chewie/chewie.dart';
 import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:onlinevideo/pages/widgets/button.dart';
 import 'package:onlinevideo/pages/widgets/input.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   //? Controllers
   final _url = TextEditingController();
   late VideoPlayerController _videController;
+  late ChewieController _chewieController;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   //? Variables
@@ -45,6 +46,7 @@ class _HomePageState extends State<HomePage> {
                 lable: 'Url',
                 maxLines: 1,
                 isRequired: true,
+                clearable: true,
                 errorText: 'Please input url',
               ),
               const SizedBox(height: 10),
@@ -82,31 +84,35 @@ class _HomePageState extends State<HomePage> {
 
   void _playPause() async {
     if (formKey.currentState!.validate()) {
-      downloading = true;
-      setState(() {});
+      try {
+        downloading = true;
+        setState(() {});
 
-      // final tempDir = await getTemporaryDirectory();
-      // final file = await File('${tempDir.path}/temp.mp4').create();
+        // final tempDir = await getTemporaryDirectory();
+        // final file = await File('${tempDir.path}/temp.mp4').create();
 
-      // final dio = Dio();
-      // await dio.download(_url.text, file.path);
+        // final dio = Dio();
+        // await dio.download(_url.text, file.path);
 
-      _videController = VideoPlayerController.networkUrl(
-        Uri.parse(_url.text),
-      );
+        _videController = VideoPlayerController.networkUrl(
+          Uri.parse(_url.text),
+        );
 
-      await _videController.initialize();
-      _videController.addListener(_checkVideo);
+        await _videController.initialize();
+        _videController.addListener(_checkVideo);
 
-      downloading = false;
-      if (_videController.value.isPlaying) {
-        await _videController.pause();
-        showVideo = false;
-      } else {
-        _videController.play();
-        showVideo = true;
+        downloading = false;
+        if (_videController.value.isPlaying) {
+          await _videController.pause();
+          showVideo = false;
+        } else {
+          _videController.play();
+          showVideo = true;
+        }
+        setState(() {});
+      } catch (e) {
+        print(e);
       }
-      setState(() {});
     }
   }
 
